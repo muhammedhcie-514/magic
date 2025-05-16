@@ -1,0 +1,30 @@
+Example: Add a fact for servera and serverb and set usage to test.
+Step 1 Create required files on the controlled host.
+To customize environment variables, create an /etc/ansible/facts.d directory on the
+controlled host and import the defined facts as the x.fact file. Create a usage.fact file on
+the controlled host as follows.
+[usage]
+name=test
+Write a playbook to create the required directory and copy the created usage.fact file to
+the controlled hosts.
+- hosts: all
+ tasks:
+ - name: mkdir dir
+ file:
+ state: directory
+ path: /etc/ansible/facts.d
+ - name: upload file
+ copy:
+src: /root/yaml/usage.fact
+ dest: /etc/ansible/facts.d/usage.fact
+
+Step 2 Conduct a test.
+Run the following command to check whether the customized facts take effect:
+[root@controller yaml]# ansible all -m setup -a "filter=ansible_local"
+
+⚫ Question: Can filter of the setup module be used to accurately filter a user-defined
+fact?
+⚫ Answer: No. filter of the setup module can read only the lower layer of
+ansible_facts.
+
+
