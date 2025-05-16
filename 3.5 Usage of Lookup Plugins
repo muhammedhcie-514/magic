@@ -1,0 +1,50 @@
+3.5.1 Usage of the File Module
+Example: Read the content in the username file and set it as a variable.
+Write a playbook as follows:
+- hosts: servera
+ gather_facts: false
+ tasks:
+ - debug:
+ msg: "username is {{ lookup('file','/root/yaml/username') }}"
+Write the username file as follows:
+zhangsan
+lisi
+wangwu
+zhaoliu
+
+Execute the playbook. The output is as follows.
+ansible-playbook file.yml
+
+3.5.2 Usage of the Password Module
+Example: Create a test user, automatically generate a password with eight characters,
+and save the password in the /root/yaml/password file.
+Write a playbook as follows:
+- hosts: servera
+ gather_facts: false
+ tasks:
+ - user:
+ name: test
+ password: "{{ lookup('password','/root/yaml/password length=8')}}"
+Execute the playbook and check the password of the test user.
+[root@controller yaml]# cat password
+hXQeKUm,
+Use the password to log in to servera and check whether the creation is successful.
+[root@clinet-1 ~]# cat /etc/passwd
+……
+test:x:1001:1001::/home/test:/bin/bash
+[root@clinet-1 ~]# cat /etc/shadow
+……
+test:hXQeKUm,:19653:0:99999:7:::
+3.5.3 Usage of the env Module
+Example: Check the value of the environment variable HOME on the controlled host.
+Write a playbook as follows:
+- hosts: servera
+ gather_facts: false
+ tasks:
+ - debug:
+ msg: "the value of $HOME is {{ lookup('env','HOME') }}"
+
+
+Execute the playbook. The output is as follows.
+ansible-playbook file.yml
+
