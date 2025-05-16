@@ -1,0 +1,33 @@
+3.4.1 Usage of hostvars
+Example: Check other variables except facts of servera.
+Write a playbook as follows:
+- hosts: servera
+ remote_user: root
+gather_facts: false
+ tasks:
+ - name: hostvars
+ debug:
+ msg: "{{ hostvars['servera'] }}"
+The output is as follows.
+ansible-playbook hostvar.yml
+
+⚫ Question: Can the host in the playbook be specified as serverb?
+⚫ Answer: Yes. Modify as required.
+⚫ Question: Why does servera need to be specified in msg: "{{ hostvars['servera'] }}"?
+What happens if it is not specified?
+⚫ Answer: The variables related to servera need to be obtained. Therefore, servera is
+specified in hostvars. If servera is not specified, variables related to all hosts in the
+host list are displayed.
+3.4.2 Usage of inventory_hostname
+Example: List the name of the controlled host where a task is being executed.
+Write a playbook as follows:
+- hosts: servera
+ gather_facts: false
+ tasks:
+ - debug:
+ msg: "{{ inventory_hostname }}"
+The output is as follows.
+
+ansible-playbook hostname.yml
+
+
