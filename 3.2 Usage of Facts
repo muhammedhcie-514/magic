@@ -1,0 +1,73 @@
+Step 1 Extract all facts.
+There are numerous facts. Before extracting them, run the following command to export
+all facts to a text file using the setup module for easier searching:
+[root@controller yaml]# ansible servera -m setup > servera.txt
+Step 2 Search for IP address information.
+Skim the servera.txt file, and you can see IP addresses are displayed in
+ansible_all_ipv4_addresses, ansible_default_ipv4, and ipv4.
+
+"ansible_fact": { 
+  'ansible_all_ipv4_addresses": [
+        "172.16.0.12",
+        "10.0.1.12"
+],
+
+'ansible_default_ipv4": {
+"address": "172.16.0.12",
+"alias": "ens3",
+"broadcast": "172.16.0.255"
+"gateway": "172.16.0.1",
+"interface": "ens3",
+"macaddress": "fa:16:3e:43:33:3f"
+"mtu": 1500,
+"netmask": "255.255.255.0",
+"network": "172.16.0.0",
+"type": "ether"
+},
+
+"hw_timestamp_filters": [],
+'ipv4": {
+"address": "10.0.1.12",
+"broadcast": "10.0.1.255",
+"netmask": "255.255.255.0"
+"network": "10.0.1.0"
+}
+
+"hw_timestamp_filters": [],
+"ipv4": {
+"address": "172.16.0.12",
+"broadcast": "172.16.0.255",
+"netmask": "255.255.255.0",
+"network": "172.16.0.0"
+}
+
+ansible_all_ipv4_addresses cannot map IP addresses to NICs, and ansible_default_ipv4
+cannot display all IP addresses. Therefore, only ipv4 can be used. The value of address in
+ipv4 is the IP address. The upper level of ipv4 is ansible_xxxx, where xxxx indicates the
+NIC name. The upper level of ansible_xxxx is ansible_facts. Therefore, the fact used in
+this example is ansible_xxxx.ipv4.address.
+
+Step 3 Conduct a test.
+Write a playbook as follows and invoke the fact determined in step 2 to test whether the
+requirements can be met.
+- hosts: servera
+ gather_facts: true
+ tasks:
+ - debug:
+ msg: "ip address of enp4s4 is {{ ansible_enp4s4.ipv4.address}}"
+ - debug:
+ msg: "ip address of ens3 is {{ ansible_ens3.ipv4.address }}"
+Execute the playbook to obtain the following information.
+ansible-playbook fact.yml
+
+⚫ Question: Can gather_facts not be configured in the playbook in step 3?
+⚫ Answer: If gather_facts can collect facts by default in the configuration file, you do
+not need to set it; otherwise, you must set it to true or yes.
+⚫ Task: Select appropriate facts to obtain the capacity of a partition.
+⚫ Reference: Use ansible_devices.vda.partitions.vda1.size to read the capacity of
+partition vda1.
+
+
+
+
+
